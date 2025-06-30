@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --font-display: "Popins", sans-serif;
+  
+}
+
+@theme {
+  --font-display: "Popins", "sans-serif";
+  --breakpoint-3xl: 120rem;
+  
+  --color-primary: #308C5B;
+  --color-secondary: #D9D9D9;
+  
+  /* ... */
+}
+
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-display);
+}
+/* globals.css */
+body.dark {
+  background-color: #1f2937;
+  color: #308C5B;
+}
+
+body.dark .dark\:bg-gray-800 {
+  background-color: #1f2937;
+}
+
+body.dark .dark\:text-white {
+  color: white;
+}
+
+body.dark .dark\:text-gray-300 {
+  color: #d1d5db;
+}
+
