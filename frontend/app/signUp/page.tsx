@@ -6,7 +6,7 @@ import { FaGoogle, FaFacebookF, FaSpinner } from "react-icons/fa";
 import { useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "next/navigation";
-
+import { toast } from 'react-toastify'
 
 interface SignUpUser {
   name: string;
@@ -48,11 +48,12 @@ export default function SignUp() {
   const mutation = useMutation({
     mutationFn: (payload: SignUpUser) => signupFn(payload),
     onSuccess: (data) => {
-      console.log("Signup success:", data);
+    
+     toast.success('Signup success')
       router.push('/')
     },
     onError: (error: any) => {
-      alert(error?.response?.data?.message || "Signup failed");
+      toast.error(error?.response?.data?.message || "Signup failed");
     },
   });
 

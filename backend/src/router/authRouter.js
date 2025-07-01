@@ -11,7 +11,7 @@ authRouter.post('/signUp', signup)
 
 authRouter.post('/logout', logout);
 
-authRouter.put('/update-profile', updateProfile);
+authRouter.put('/update-profile',protectRoute, updateProfile);
 
 authRouter.get('/check', protectRoute, checkAuth);
 

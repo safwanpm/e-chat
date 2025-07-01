@@ -5,7 +5,7 @@ import Link from "next/link";
 import { FaGoogle, FaFacebookF } from "react-icons/fa";
 import { useMutation } from '@tanstack/react-query';
 import { useState, useRef } from 'react';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify'
 
 export default function Profile() {
   const { authUser, updateProfile, isUpdatingProfile } = useAuthStore();

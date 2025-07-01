@@ -1,7 +1,7 @@
 
 import { Server } from "socket.io";
 
-const userSocketMap = {}; // { userId: socketId }
+const userSocketMap = {}; 
 export const getReceiverSocketId = (userId) => userSocketMap[userId];
 
 export let io = null;

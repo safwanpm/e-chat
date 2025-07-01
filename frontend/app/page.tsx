@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { FaGoogle, FaFacebookF, FaSpinner } from 'react-icons/fa';
 import { useMutation } from '@tanstack/react-query';
 import { useAuthStore } from '@/store/authStore';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify'
 import { useRouter } from 'next/navigation';
 
 interface AuthUser {

@@ -4,12 +4,7 @@ import { axiosInstance } from "@/lib/axios";
 import { AxiosError } from "axios";
 import { useAuthStore } from "./authStore";
 
-export type UserProfile = {
-  _id: String;
-  name: string;
-  profilePic: string;
-  status: 'Online' | 'Offline';
-};
+
 export interface User {
   _id: string;
   name: string;
@@ -36,6 +31,8 @@ interface ChatStore {
   isUsersLoading: boolean;
   isMessagesLoading: boolean;
   isViewUsersLoading: boolean;
+  onlineUserIds: string[];
+  setOnlineUserIds: (ids: string[]) => void;
 
   getUsers: () => Promise<void>;
   getViewUsers: () => Promise<void>; 
@@ -47,6 +44,10 @@ interface ChatStore {
 }
 
 export const useChatStore = create<ChatStore>((set, get) => ({
+  onlineUserIds: [],
+
+setOnlineUserIds: (ids) => set({ onlineUserIds: ids }),
+
   messages: [],
   users: [],
   viewUsers: [],

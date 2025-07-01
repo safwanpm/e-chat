@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { Loader } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify'
 
 import { useAuthStore } from '@/store/authStore';
 import { useChatStore } from '@/store/chatStore';

@@ -3,20 +3,21 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --font-display: "Popins", sans-serif;
-  
+  --font-display: "Popins", sans-serif; /* Your existing font display */
+
+  /* These variables are populated by Next.js font loader and can be used */
+  --font-geist-sans: var(--font-geist-sans);
+  --font-geist-mono: var(--font-geist-mono);
+  --font-inter: var(--font-inter); /* The new Inter font variable */
 }
 
 @theme {
   --font-display: "Popins", "sans-serif";
   --breakpoint-3xl: 120rem;
-  
   --color-primary: #308C5B;
   --color-secondary: #D9D9D9;
-  
   /* ... */
 }
-
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -28,8 +29,19 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-display);
+  /* Prioritize Inter for general body text, fallback to Popins, then generic sans-serif */
+  font-family: var(--font-inter), var(--font-display), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
+
+/* You can explicitly use Popins for headings if that's the intent of --font-display */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display); /* Use Popins for headings */
+}
+
+pre, code {
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* Use Geist Mono for code blocks */
+}
+
 /* globals.css */
 body.dark {
   background-color: #1f2937;
@@ -47,4 +59,3 @@ body.dark .dark\:text-white {
 body.dark .dark\:text-gray-300 {
   color: #d1d5db;
 }
-

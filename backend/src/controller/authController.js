@@ -56,12 +56,12 @@ export const login = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: "Email not registerd" });
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
-      return res.status(400).json({ message: "Invalid credentials" });
+      return res.status(400).json({ message: "Check Password" });
     }
 
     generateToken(user._id, res);
@@ -80,37 +80,6 @@ export const login = async (req, res) => {
 };
 
 
-// export const login = async (req, res) => {
-//   const { email, password } = req.body;
-
-//   try {
-//     const user = await User.findOne({ email });
-//     if (!user) return res.status(400).json({ message: "User not found" });
-
-//     const isPasswordCorrect = await bcrypt.compare(password, user.password);
-//     if (!isPasswordCorrect) return res.status(400).json({ message: "Check Password" });
-
-//     // Generate JWT token (HTTP-only cookie)
-//     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '15d' });
-
-//     res.cookie('jwt', token, {
-//       httpOnly: true,
-//       maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
-//       secure: process.env.NODE_ENV === 'production',
-//       sameSite: 'strict',
-//     });
-
-//     // Return minimal user data for the frontend store
-//     res.status(200).json({
-//       _id: user._id,
-//       name: user.fullName,
-//       email: user.email,
-//       profilePic: user.profilePic,
-//     });
-//   } catch (error) {
-//     res.status(500).json({ message: "Internal Server Error" });
-//   }
-// };
 export const logout = (req, res) => {
   try {
     res.cookie("jwt", "", { maxAge: 0 });
