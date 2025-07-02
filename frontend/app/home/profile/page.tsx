@@ -1,17 +1,26 @@
 'use client';
+
 import { useAuthStore } from "@/store/authStore";
-import Image from "next/image";
 import Link from "next/link";
-import { FaGoogle, FaFacebookF } from "react-icons/fa";
+import Image from "next/image";
 import { useMutation } from '@tanstack/react-query';
 import { useState, useRef } from 'react';
-import { toast } from 'react-toastify'
+import { toast } from 'react-toastify';
+
+type UpdateProfileInput = {
+  _id: string;
+  name: string;
+  email: string;
+  password?: string;
+  confirmPassword?: string;
+  profilePic?: string;
+};
 
 export default function Profile() {
   const { authUser, updateProfile, isUpdatingProfile } = useAuthStore();
 
   const [formData, setFormData] = useState({
-    _id:authUser?._id,
+    _id: authUser?._id || '',
     name: authUser?.name || '',
     email: authUser?.email || '',
     password: '',
@@ -26,14 +35,10 @@ export default function Profile() {
   const uploadToCloudinary = async (file: File): Promise<string> => {
     const formData = new FormData();
     formData.append('file', file);
-    // formData.append('upload_preset', 'e-chat-cloudinary');
-    // formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'your_upload_preset');
-    // formData.append('cloud_name', process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'your_cloud_name');
     formData.append('cloud_name', 'dh4xqnzmv');
 
     try {
       const response = await fetch(
-        // `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'your_cloud_name'}/image/upload`,
         'https://api.cloudinary.com/v1_1/dh4xqnzmv/image/upload',
         {
           method: 'POST',
@@ -44,18 +49,16 @@ export default function Profile() {
       if (!response.ok) throw new Error('Failed to upload image');
 
       const data = await response.json();
-      console.log(data.secure_url,'img');
-      
       return data.secure_url;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Cloudinary upload error:', error);
       throw new Error('Image upload failed. Please try again.');
     }
   };
 
   const updateProfileMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const { _id,name, email, password, confirmPassword, profilePic } = data;
+    mutationFn: async (data: UpdateProfileInput) => {
+      const { _id, name, email, password, confirmPassword, profilePic } = data;
 
       if (password && password !== confirmPassword) {
         throw new Error('Passwords do not match');
@@ -69,7 +72,7 @@ export default function Profile() {
         ...(profilePic && { profilePic }),
       };
 
-      await updateProfile(updateData,);
+      await updateProfile(updateData);
     },
     onSuccess: () => {
       toast.success('Profile updated successfully!');
@@ -85,8 +88,9 @@ export default function Profile() {
         setImagePreview(authUser.profilePic);
       }
     },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to update profile');
+    onError: (error: unknown) => {
+      const err = error as Error;
+      toast.error(err.message || 'Failed to update profile');
       setIsUploadingImage(false);
     },
   });
@@ -155,8 +159,9 @@ export default function Profile() {
         ...formData,
         profilePic: profilePicUrl,
       });
-    } catch (error: any) {
-      toast.error(error.message || 'Image upload failed');
+    } catch (error) {
+      const err = error as Error;
+      toast.error(err.message || 'Image upload failed');
       setIsUploadingImage(false);
     }
   };
@@ -170,7 +175,7 @@ export default function Profile() {
           <span className="font-extrabold text-primary text-2xl">/</span>
           <h1 className="font-bold text-primary text-2xl">Profile</h1>
         </div>
-        <img src="/image/chatting.png" alt="image" className="w-10 h-10 text-primary" />
+        <Image src="/image/chatting.png" alt="image" width={40} height={40} className="text-primary" />
         <h2 className="font-extrabold text-4xl md:text-6xl text-primary">EChat</h2>
       </div>
 
@@ -180,10 +185,12 @@ export default function Profile() {
 
         <div className="flex justify-center text-center py-2">
           <div className="relative group">
-            <img
-              src={imagePreview || '/default-avatar.png'}
-              className="rounded-full border border-primary h-20 w-20 object-cover cursor-pointer transition-opacity group-hover:opacity-80"
+            <Image
+              src={imagePreview}
               alt="profile"
+              width={80}
+              height={80}
+              className="rounded-full border border-secondary object-cover cursor-pointer transition-opacity group-hover:opacity-80"
               onClick={() => fileInputRef.current?.click()}
             />
             <div
@@ -218,9 +225,7 @@ export default function Profile() {
 
         {selectedImage && !isUploadingImage && (
           <div className="text-center">
-            {selectedImage instanceof File && (
-              <p className="text-primary text-sm">New image selected: {selectedImage.name}</p>
-            )}
+            <p className="text-primary text-sm">New image selected: {selectedImage.name}</p>
             <button
               type="button"
               onClick={() => {

@@ -21,7 +21,7 @@ export default function Login() {
   const [isSkeletonLoading, setIsSkeletonLoading] = useState(true);
 
   const router = useRouter();
-  const { login, authUser, isLoggingIn } = useAuthStore();
+  const { login, isLoggingIn } = useAuthStore();
 
   // Redirect if already logged in
 

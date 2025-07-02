@@ -11,7 +11,13 @@ const messageSchema = new mongoose.Schema(
         //     sender: { type: mongoose.Schema.Types.ObjectId, ref: "Chat" },
         // }
         image:{
-            type:String        }
+            type:String        },
+        audio:{
+            type:String
+        } ,
+        video:{
+            type:String
+        }  
     },
     {
         timestamps: true

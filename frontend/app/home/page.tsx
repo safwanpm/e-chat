@@ -4,18 +4,16 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { Loader } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { toast } from 'react-toastify'
-
 import { useAuthStore } from '@/store/authStore';
 import { useChatStore } from '@/store/chatStore';
 import { ChatWindow } from '@/components/ChatWindow';
 import { EmptyChatPlaceholder } from '@/components/EmptyChatPlaceholder';
 import { NewChatModal } from '@/components/NewChatModal';
 import { Sidebar } from '@/components/Sidebar'; 
-import { UserProfile } from '@/store/chatStore';
+import { User } from '@/store/chatStore';
 
 const ChatPage = () => {
-  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [view, setView] = useState<'list' | 'chat'>('list');
 
