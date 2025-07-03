@@ -68,7 +68,7 @@ export const NewChatModal = ({ onClose }: { onClose: () => void }) => {
                   <Image
                     height={80}
                     width={80}
-                    src={user.profilePic|| '/default-avatar.png'}
+                    src={user.profilePic|| 'https://cdn-icons-png.flaticon.com/128/847/847969.png'}
                     alt={user.name}
                     className="w-10 h-10 rounded-full object-cover"
                   />

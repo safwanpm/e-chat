@@ -21,7 +21,7 @@ const server = http.createServer(app)
 
 app.use(express.json())
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: "https://e-chat-backend-slin.onrender.com",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"]

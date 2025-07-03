@@ -40,7 +40,7 @@ interface AuthStore {
   disconnectSocket: () => void;
 }
 
-const BASE_URL = "http://localhost:5000";
+const BASE_URL = "https://e-chat-backend-slin.onrender.com";
 
 export const useAuthStore = create<AuthStore>((set, get) => ({
   authUser: null,

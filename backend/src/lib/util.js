@@ -6,10 +6,10 @@ export const generateToken = (user, res) => {
     expiresIn: '15d',
   });
 
-  res.cookie('token', token, {
-    httpOnly: true,
-    maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
-    sameSite: 'strict',
-    secure: process.env.NODE_ENV !== 'development',
-  });
+ res.cookie('token', token, {
+  httpOnly: true,
+  maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
+  sameSite: 'None', // ✅ MUST be 'None' for cross-origin cookies
+  secure: true,     // ✅ MUST be true when using SameSite: 'None'
+});
 };

@@ -18,7 +18,7 @@ export const UserAvatar = ({
   size = 48,
   isOnline = false, 
 }: UserAvatarProps) => {
-  const [imgSrc, setImgSrc] = useState(src || '/default-avatar.png');
+  const [imgSrc, setImgSrc] = useState(src || 'https://cdn-icons-png.flaticon.com/128/847/847969.png');
 
   return (
     <div className="relative inline-block">
@@ -28,7 +28,7 @@ export const UserAvatar = ({
     width={size}
     height={size}
     className={`rounded-full object-cover ${className}`}
-    onError={() => setImgSrc('/default-avatar.png')}
+    onError={() => setImgSrc('https://cdn-icons-png.flaticon.com/128/847/847969.png')}
   />
   {isOnline && (
     <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white dark:border-gray-800 rounded-full"></span>

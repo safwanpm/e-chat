@@ -2,6 +2,6 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000",
+  baseURL:  "https://e-chat-backend-slin.onrender.com",
   withCredentials: true,
 });
