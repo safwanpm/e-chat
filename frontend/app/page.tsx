@@ -7,9 +7,10 @@ import { useMutation } from '@tanstack/react-query';
 import { useAuthStore } from '@/store/authStore';
 import { toast } from 'react-toastify'
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 interface AuthUser {
-  
+
   email: string;
   password: string;
 }
@@ -46,17 +47,19 @@ export default function Login() {
   };
 
   const mutation = useMutation({
-  mutationFn: async ({ email, password }: AuthUser) => {
-    return await login({ email, password });
-  },
-  onSuccess: () => {
-    toast.success('Login successful!');
-    router.push('/home'); 
-  },
-  onError: (error: any) => {
-    toast.error(error.message || 'Login failed');
-  },
-});
+    mutationFn: async ({ email, password }: AuthUser) => {
+      return await login({ email, password });
+    },
+    onSuccess: () => {
+      toast.success('Login successful!');
+      router.push('/home');
+    },
+    onError: (error: unknown) => {
+      const err = error as { message?: string };
+      toast.error(err?.message || 'Login failed');
+    }
+
+  });
 
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -84,7 +87,9 @@ export default function Login() {
           </div>
         ) : (
           <>
-            <img src="/image/chatting.png" alt="Chatting Icon" className="w-10 h-10 mr-2" />
+
+            <Image src="/image/chatting.png" alt="Chatting Icon" width={40} height={40} className="w-10 h-10 mr-2" />
+
             <h2 className="font-extrabold text-4xl md:text-6xl text-primary">EChat</h2>
           </>
         )}
@@ -149,7 +154,7 @@ export default function Login() {
               </form>
 
               <p className="text-center text-black font-bold">
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <Link href="/signUp" className="font-extrabold text-primary">Sign Up</Link>
               </p>
             </>

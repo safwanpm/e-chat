@@ -1,7 +1,7 @@
 'use client';
 
 import {
-  ArrowLeft, Phone, Paperclip, Mic, AudioWaveform, Send, MoreVertical, Image
+  ArrowLeft, Phone, Mic, AudioWaveform, Send, MoreVertical
 } from 'lucide-react';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useAuthStore } from '@/store/authStore';
@@ -9,7 +9,8 @@ import { useChatStore, Message, User } from '@/store/chatStore';
 import { format } from 'date-fns';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
-
+import Image from 'next/image';
+import { Image as ImageIcon } from 'lucide-react';
 interface ChatWindowProps {
   contact: User;
   setView: (view: 'list' | 'chat') => void;
@@ -51,13 +52,14 @@ export const ChatWindow = ({ contact, setView }: ChatWindowProps) => {
     scrollToBottom();
   }, [relevantMessages, scrollToBottom]);
 
-  useEffect(() => {
-    if (contact._id) {
-      getMessages(contact._id);
-      subscribeToMessages();
-      return () => unsubscribeFromMessages();
-    }
-  }, [contact._id]);
+ useEffect(() => {
+  if (contact._id) {
+    getMessages(contact._id);
+    subscribeToMessages();
+    return () => unsubscribeFromMessages();
+  }
+}, [contact._id, getMessages, subscribeToMessages, unsubscribeFromMessages]);
+
 
   const uploadToCloudinary = async (file: File | Blob, type: 'image' | 'audio') => {
     const formData = new FormData();
@@ -80,27 +82,32 @@ export const ChatWindow = ({ contact, setView }: ChatWindowProps) => {
   };
 
   const sendMessageMutation = useMutation({
-    mutationFn: async (text: string) => {
-      let imageUrl = '';
-      let audioUrl = '';
+  mutationFn: async (text: string) => {
+  let imageUrl: string | undefined;
+  let audioUrl: string | undefined;
 
-      if (selectedFile) {
-        imageUrl = await uploadToCloudinary(selectedFile, 'image');
-      }
+  if (selectedFile) {
+    imageUrl = await uploadToCloudinary(selectedFile, 'image');
+  }
 
-      if (audioBlob) {
-        audioUrl = await uploadToCloudinary(audioBlob, 'audio');
-      }
+  if (audioBlob) {
+    audioUrl = await uploadToCloudinary(audioBlob, 'audio');
+  }
 
-      await sendMessage({ text, image: imageUrl, audio: audioUrl });
-    },
+  await sendMessage({ text, image: imageUrl, audio: audioUrl }); 
+},
+
     onSuccess: () => {
       setNewMessage('');
       setSelectedFile(null);
       setFilePreview(null);
       setAudioBlob(null);
     },
-    onError: (err: any) => toast.error(err?.message || 'Failed to send message'),
+   onError: (err: unknown) => {
+  const error = err as { message?: string };
+  toast.error(error?.message || 'Failed to send message');
+}
+
   });
 
   const handleSend = () => {
@@ -171,7 +178,9 @@ export const ChatWindow = ({ contact, setView }: ChatWindowProps) => {
           className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center"
           onClick={() => setPreviewImageUrl(null)}
         >
-          <img
+          <Image
+          height={1000}
+          width={1000}
             src={previewImageUrl}
             alt="Full preview"
             className="max-w-full max-h-full object-contain"
@@ -189,7 +198,7 @@ export const ChatWindow = ({ contact, setView }: ChatWindowProps) => {
             <ArrowLeft size={20} />
           </button>
           {contact.profilePic ? (
-            <img src={contact.profilePic} alt={contact.name} className="w-10 h-10 rounded-full object-cover" />
+            <Image width={80} height={80} src={contact.profilePic} alt={contact.name} className="w-10 h-10 rounded-full object-cover" />
           ) : (
             <div className="w-10 h-10 flex items-center justify-center bg-gray-300 dark:bg-gray-600 rounded-full text-gray-700 dark:text-gray-300">
               {contact.name.charAt(0)}
@@ -232,7 +241,9 @@ export const ChatWindow = ({ contact, setView }: ChatWindowProps) => {
                 return (
                   <div key={msg._id} className={`flex items-end gap-2 ${isOwn ? 'justify-end' : 'justify-start'}`}>
                     {!isOwn && (
-                      <img
+                      <Image
+                      width={60}
+                      height={60}
                         src={contact.profilePic || ''}
                         alt={contact.name}
                         className="w-8 h-8 rounded-full object-cover"
@@ -244,11 +255,13 @@ export const ChatWindow = ({ contact, setView }: ChatWindowProps) => {
                         : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-bl-none'
                         }`}>
                         {msg.image && (
-                          <img
+                          <Image
+                          height={80}
+                          width={80}
                             src={msg.image}
                             alt="attachment"
                             className="w-60 h-40 max-h-60 rounded-lg mb-2 cursor-pointer"
-                            onClick={() => setPreviewImageUrl(msg.image)}
+                            onClick={() => setPreviewImageUrl(msg.image ?? null)}
                           />
                         )}
                         {msg.audio && (
@@ -264,7 +277,9 @@ export const ChatWindow = ({ contact, setView }: ChatWindowProps) => {
                       </span>
                     </div>
                     {isOwn && (
-                      <img
+                      <Image
+                      height={80}
+                      width={80}
                         src={authUser.profilePic || ''}
                         alt="You"
                         className="w-8 h-8 rounded-full object-cover"
@@ -288,7 +303,7 @@ export const ChatWindow = ({ contact, setView }: ChatWindowProps) => {
       <div className="p-3 dark:border-gray-700 bg-white dark:bg-gray-800">
         {filePreview && (
           <div className="mb-2 relative">
-            <img src={filePreview} alt="Preview" className="w-32 h-32 object-cover rounded-md" />
+            <Image src={filePreview} alt="Preview" width={80} height={80} className="w-32 h-32 object-cover rounded-md" />
             <button
               onClick={() => {
                 setFilePreview(null);
@@ -300,7 +315,7 @@ export const ChatWindow = ({ contact, setView }: ChatWindowProps) => {
         )}
         <div className="flex items-center gap-2">
           <button onClick={() => fileInputRef.current?.click()} className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full">
-            <Image size={20} />
+            <ImageIcon size={20} />
           </button>
           <input
             ref={fileInputRef}
@@ -318,13 +333,14 @@ export const ChatWindow = ({ contact, setView }: ChatWindowProps) => {
           />
           <button
             onClick={newMessage.trim() || selectedFile || audioBlob ? handleSend : handleAudioRecord}
-            disabled={sendMessageMutation.isLoading}
+           disabled={sendMessageMutation.isPending}
+
             className={`p-3 rounded-full transition-colors ${newMessage.trim() || selectedFile || audioBlob
                 ? 'bg-primary hover:text-gray-600 text-white'
                 : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
               }`}
           >
-            {sendMessageMutation.isLoading ? (
+            {sendMessageMutation.isPending ? (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : isRecording ? (
               <AudioWaveform />

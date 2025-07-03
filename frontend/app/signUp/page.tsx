@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/authStore";
 import { useRouter } from "next/navigation";
 import { toast } from 'react-toastify'
+import Image from "next/image";
 
 interface SignUpUser {
   name: string;
@@ -47,14 +48,15 @@ export default function SignUp() {
 
   const mutation = useMutation({
     mutationFn: (payload: SignUpUser) => signupFn(payload),
-    onSuccess: (data) => {
-    
-     toast.success('Signup success')
+    onSuccess: () => {
+
+      toast.success('Signup success')
       router.push('/')
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Signup failed");
-    },
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err?.response?.data?.message || "Signup failed");
+    }
   });
 
 
@@ -82,7 +84,14 @@ export default function SignUp() {
           </div>
         ) : (
           <>
-            <img src="/image/chatting.png" alt="Chatting Icon" className="w-10 h-10 mr-2" />
+            <Image
+              src="/image/chatting.png"
+              alt="Chatting Icon"
+              width={40}
+              height={40}
+              className="w-10 h-10 mr-2"
+            />
+
             <h2 className="font-extrabold text-4xl md:text-6xl text-primary">EChat</h2>
           </>
         )}

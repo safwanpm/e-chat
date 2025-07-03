@@ -5,6 +5,7 @@ import { X } from 'lucide-react';
 import { useChatStore } from '@/store/chatStore';
 import { User } from '@/store/chatStore';
 import { useAuthStore } from '@/store/authStore';
+import Image from 'next/image';
 
 export const NewChatModal = ({ onClose }: { onClose: () => void }) => {
   const { viewUsers, getViewUsers, setSelectedUser } = useChatStore();
@@ -64,8 +65,10 @@ export const NewChatModal = ({ onClose }: { onClose: () => void }) => {
                   onClick={() => handleUserSelect(user)}
                   className="p-3 rounded-md cursor-pointer hover:bg-secondary shadow-xl bg-gray-100   flex items-center space-x-3"
                 >
-                  <img
-                    src={user.profilePic}
+                  <Image
+                    height={80}
+                    width={80}
+                    src={user.profilePic|| '/default-avatar.png'}
                     alt={user.name}
                     className="w-10 h-10 rounded-full object-cover"
                   />

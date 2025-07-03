@@ -18,8 +18,14 @@ export interface Message {
   senderId: string;
   receiverId: string;
   text: string;
-  createdAt: string;
+  createdAt: string
+  image?: string;  // add this
+  audio?: string;  // add this
 }
+
+
+
+
 
 
 
@@ -37,7 +43,7 @@ interface ChatStore {
   getUsers: () => Promise<void>;
   getViewUsers: () => Promise<void>; 
   getMessages: (userId: string) => Promise<void>;
-  sendMessage: (messageData: { text: string }) => Promise<void>;
+  sendMessage: (messageData: { text: string ,image?: string; audio?: string }) => Promise<void>;
   subscribeToMessages: () => void;
   unsubscribeFromMessages: () => void;
   setSelectedUser: (user: User) => void;
@@ -103,7 +109,8 @@ setOnlineUserIds: (ids) => set({ onlineUserIds: ids }),
     }
   },
 
-  sendMessage: async (messageData: { text: string }) => {
+  sendMessage: async (messageData: { text: string; image?: string; audio?: string }) => {
+
     const { selectedUser, messages } = get();
     if (!selectedUser) return;
 
