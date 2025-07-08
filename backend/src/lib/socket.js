@@ -9,8 +9,7 @@ export let io = null;
 export function setupSocket(server) {
   io = new Server(server, {
     cors: {
-      // origin: "http://localhost:3000",
-      origin: "https://e-chat-omega.vercel.app/",
+      origin: "https://e-chat-omega.vercel.app",
       credentials: true,
     },
   });

@@ -21,8 +21,7 @@ const server = http.createServer(app)
 
 app.use(express.json())
 app.use(cors({
-    // origin: "http://localhost:3000",
-    origin: "https://e-chat-omega.vercel.app/",
+    origin: "https://e-chat-omega.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"]
