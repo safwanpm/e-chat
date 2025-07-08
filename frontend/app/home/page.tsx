@@ -93,6 +93,7 @@ const ChatPage = () => {
   const { authUser, checkAuth, isCheckingAuth } = useAuthStore();
   const { selectedUser, setSelectedUser } = useChatStore();
 
+
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);

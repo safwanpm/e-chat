@@ -9,7 +9,8 @@ export let io = null;
 export function setupSocket(server) {
   io = new Server(server, {
     cors: {
-      origin: "http://localhost:3000",
+      // origin: "http://localhost:3000",
+      origin: "https://e-chat-omega.vercel.app/",
       credentials: true,
     },
   });
@@ -18,6 +19,7 @@ export function setupSocket(server) {
     console.log("User connected:", socket.id);
 
     const userId = socket.handshake.query.userId;
+ 
     if (userId) {
       userSocketMap[userId] = socket.id;
       console.log(`User ${userId} registered to socket ${socket.id}`);

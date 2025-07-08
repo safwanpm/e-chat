@@ -11,7 +11,7 @@ export interface AuthUser {
   email: string;
   profilePic?: string;
   staus:'online'| 'offline'
-  // add other user fields if available
+  
 }
 
 interface AuthPayload {

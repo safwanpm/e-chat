@@ -54,46 +54,46 @@ export const viewUsers = async (req, res) => {
 
 import mongoose from 'mongoose';
 
+
+
 // export const getUsersForSidebar = async (req, res) => {
-//     try {
-//         console.log(req.body, 'dsda'); // Still logs body, usually empty for GET
+//   try {
+//     const loggedInUserId = req.user._id;
 
-//         // Ensure req.user._id is populated by your authentication middleware
-//         const loggedInUserId = req.user._id;
+//     const messages = await Message.find({
+//       $or: [
+//         { senderId: loggedInUserId },
+//         { receiverId: loggedInUserId }
+//       ]
+//     }).select('senderId receiverId');
 
-//         // 1. Find all messages where the loggedInUser is either the senderId or the receiverId
-//         const messages = await Message.find({
-//             $or: [
-//                 { senderId: loggedInUserId },
-//                 { receiverId: loggedInUserId }
-//             ]
-//         }).select('senderId receiverId'); // Select only senderId and receiverId IDs to optimize
+//     const participantIds = new Set();
+//     messages.forEach(message => {
+//       if (message.senderId && message.senderId.toString() !== loggedInUserId.toString()) {
+//         participantIds.add(message.senderId.toString());
+//       }
+//       if (message.receiverId && message.receiverId.toString() !== loggedInUserId.toString()) {
+//         participantIds.add(message.receiverId.toString());
+//       }
+//     });
 
-//         // 2. Extract unique user IDs from these messages (excluding the logged-in user)
-//         const participantIds = new Set();
-//         messages.forEach(message => {
-//             // Convert ObjectIds to strings for consistent comparison
-//             if (message.senderId && message.senderId.toString() !== loggedInUserId.toString()) {
-//                 participantIds.add(message.senderId.toString());
-//             }
-//             if (message.receiverId && message.receiverId.toString() !== loggedInUserId.toString()) {
-//                 participantIds.add(message.receiverId.toString());
-//             }
-//         });
+//     const userIdsToFetch = Array.from(participantIds).map(id => new mongoose.Types.ObjectId(id));
+//     const users = await User.find({ _id: { $in: userIdsToFetch } }).select("-password");
 
-//         // Convert Set of string IDs to an Array of Mongoose ObjectIds
-//         const userIdsToFetch = Array.from(participantIds).map(id => new mongoose.Types.ObjectId(id));
+//     const usersWithStatus = users.map((user) => {
+//       const isOnline = getReceiverSocketId(user._id.toString()) !== undefined;
+//       return {
+//         ...user.toObject(),
+//         status: isOnline ? 'Online' : 'Offline',
+//       };
+//     });
 
-//         // 3. Fetch the user details for these unique IDs, excluding the password
-//         const messagedOrReceivedUsers = await User.find({ _id: { $in: userIdsToFetch } }).select("-password");
-
-//         res.status(200).json(messagedOrReceivedUsers);
-//     } catch (error) {
-//         console.error("Error in getUsersForSidebar: ", error.message);
-//         res.status(500).json({ error: "Internal server error" });
-//     }
+//     res.status(200).json(usersWithStatus);
+//   } catch (error) {
+//     console.error("Error in getUsersForSidebar: ", error.message);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
 // };
-
 
 export const getUsersForSidebar = async (req, res) => {
   try {
@@ -104,43 +104,51 @@ export const getUsersForSidebar = async (req, res) => {
         { senderId: loggedInUserId },
         { receiverId: loggedInUserId }
       ]
-    }).select('senderId receiverId');
+    }).sort({ createdAt: -1 }); // Sort messages by latest first
 
+    const lastMessageMap = new Map();
     const participantIds = new Set();
+
     messages.forEach(message => {
-      if (message.senderId && message.senderId.toString() !== loggedInUserId.toString()) {
-        participantIds.add(message.senderId.toString());
-      }
-      if (message.receiverId && message.receiverId.toString() !== loggedInUserId.toString()) {
-        participantIds.add(message.receiverId.toString());
+      const otherUserId = message.senderId.toString() === loggedInUserId.toString()
+        ? message.receiverId.toString()
+        : message.senderId.toString();
+
+      // Only store the latest message (first occurrence due to sorted order)
+      if (!lastMessageMap.has(otherUserId)) {
+        lastMessageMap.set(otherUserId, message.createdAt);
+        participantIds.add(otherUserId);
       }
     });
 
     const userIdsToFetch = Array.from(participantIds).map(id => new mongoose.Types.ObjectId(id));
     const users = await User.find({ _id: { $in: userIdsToFetch } }).select("-password");
 
-    const usersWithStatus = users.map((user) => {
+    const usersWithStatusAndTime = users.map((user) => {
       const isOnline = getReceiverSocketId(user._id.toString()) !== undefined;
       return {
         ...user.toObject(),
         status: isOnline ? 'Online' : 'Offline',
+        lastMessageAt: lastMessageMap.get(user._id.toString())
       };
     });
 
-    res.status(200).json(usersWithStatus);
+    // Sort users by lastMessageAt (descending)
+    usersWithStatusAndTime.sort((a, b) => new Date(b.lastMessageAt) - new Date(a.lastMessageAt));
+
+    res.status(200).json(usersWithStatusAndTime);
   } catch (error) {
     console.error("Error in getUsersForSidebar: ", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
 
-
-
 export const getMessages = async (req, res) => {
   try {
     const { id: userToChatId } = req.params;
     const myId = req.user._id;
-
+    
+    
     const messages = await Message.find({
       $or: [
         { senderId: myId, receiverId: userToChatId },

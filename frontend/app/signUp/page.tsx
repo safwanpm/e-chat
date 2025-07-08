@@ -51,7 +51,7 @@ export default function SignUp() {
     onSuccess: () => {
 
       toast.success('Signup success')
-      router.push('/')
+      router.push('/home')
     },
     onError: (error: unknown) => {
       const err = error as { response?: { data?: { message?: string } } };

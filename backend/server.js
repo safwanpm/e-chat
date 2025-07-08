@@ -21,7 +21,8 @@ const server = http.createServer(app)
 
 app.use(express.json())
 app.use(cors({
-    origin: "https://e-chat-omega.vercel.app",
+    // origin: "http://localhost:3000",
+    origin: "https://e-chat-omega.vercel.app/",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"]
@@ -32,7 +33,7 @@ ConnectDb()
 app.use('/auth', authRouter)
 app.use('/message', messageRouter)
 
-// setup socket
+
 setupSocket(server)
 
 const PORT = process.env.PORT || 5000
